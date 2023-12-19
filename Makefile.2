@@ -1,0 +1,7 @@
+OBJECTS 	:= main.cpp Makefile.1
+
+RUN: $(OBJECTS)
+	@echo $@ #当前目标
+	@echo $^ #所有依赖的文件
+	@echo $< #第一个依赖的文件
+	@echo $? #比目标还要新的依赖文件列表
