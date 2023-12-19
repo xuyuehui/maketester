@@ -1,0 +1,40 @@
+CC = clang++
+CFLAGS = -g -std=c++11 -std=c++0x -Wall -Wextra
+OBJCFLAGS = -framework Cocoa
+
+SOURCEDIR 	:= .
+BUILDDIR 	:= build
+SOURCES 	:= $(wildcard $(addprefix $(SOURCEDIR)/, *.cpp))
+OBJECTS 	:= $(addprefix $(BUILDDIR)/, $(notdir $(SOURCES:.cpp=.o)))
+
+TARGET 		:= maketester
+
+INCLUDEDIR 	:= -I$(SOURCEDIR)
+
+MD := mkdir -p
+
+ifeq ($(OS), Windows_NT)
+else
+	UNAME_S := $(shell uname -s)
+	ifeq ($(UNAME_S), Linux)
+		CFLAGS += -D LINUX
+	endif
+
+	ifeq ($(UNAME_S), Darwin)
+		CFLAGS += -D OSX
+	endif
+endif
+
+osx: osx_prepare osx_compile
+
+osx_prepare:
+	@$(MD) $(BUILDDIR)
+	
+osx_compile: $(OBJECTS)
+	@$(CC) -o $(TARGET) $(CFLAGS) $(OBJCFLAGS) $(OBJECTS)
+
+$(TARGET) : $(OBJECTS)
+	@$(CC) $(CFLAGS) $(INCLUDEDIR) -o $@ -c $^
+
+$(BUILDDIR)/%.o : $(SOURCEDIR)/%.cpp 
+	@$(CC) $(CFLAGS) $(INCLUDEDIR) -o $@ -c $^
